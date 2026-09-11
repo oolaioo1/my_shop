@@ -21,6 +21,9 @@ class _HomesliderState extends State<Homeslider> {
         items: List.generate(widget.bannerItems.length, (int i) {
           return Image.network(
             widget.bannerItems[i].imageUrl ?? '',
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset('lib/assets/images/cart.jpeg');
+            },
             fit: BoxFit.cover,
             width: screeWidth,
           );

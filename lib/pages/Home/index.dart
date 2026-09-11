@@ -8,6 +8,8 @@ import 'package:my_shop/components/Home/HomeMoreList.dart';
 
 import 'package:my_shop/viewmodels/home.dart';
 
+import 'package:my_shop/api/home.dart';
+
 class HomeView extends StatefulWidget {
   HomeView({Key? key}) : super(key: key);
 
@@ -16,46 +18,98 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  final List<BannerItem> _bannerItems = [
-    BannerItem(
-      id: '1',
-      imageUrl:
-          'https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meituan/1.jpg',
-    ),
-    BannerItem(
-      id: '2',
-      imageUrl:
-          'https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meituan/3.jpg',
-    ),
-    BannerItem(
-      id: '3',
-      imageUrl:
-          'https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meituan/3.jpg',
-    ),
-  ];
+  List<BannerItem> _bannerItems = [];
+  List<CategoryItem> _categoryItems = [];
+  FlashSaleRecommend _flashSaleRecommendItems = FlashSaleRecommend(
+    id: "",
+    title: "",
+    subTypes: [],
+  );
+  FlashSaleRecommend _hotInVogueItems = FlashSaleRecommend(
+    id: "",
+    title: "",
+    subTypes: [],
+  );
+  FlashSaleRecommend _hotOnestopItems = FlashSaleRecommend(
+    id: "",
+    title: "",
+    subTypes: [],
+  );
+  List<HotRecommendItem> _hotRecommendItems = [];
 
   List<Widget> _getScrollChildren() {
     // 首页轮播图
     return [
       SliverToBoxAdapter(child: Homeslider(bannerItems: _bannerItems)),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
-      SliverToBoxAdapter(child: HomeCategory()),
+      SliverToBoxAdapter(child: HomeCategory(categoryItems: _categoryItems)),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
-      SliverToBoxAdapter(child: Homesuggestion()),
+      SliverToBoxAdapter(
+        child: Homesuggestion(
+          flashSaleRecommendItems: _flashSaleRecommendItems,
+        ),
+      ),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
       SliverToBoxAdapter(
         child: Flex(
           direction: Axis.horizontal,
           children: [
-            Expanded(child: HomeHots()),
+            Expanded(
+              child: HomeHots(result: _hotInVogueItems, type: 'hot'),
+            ),
             SizedBox(width: 10),
-            Expanded(child: HomeHots()),
+            Expanded(
+              child: HomeHots(result: _hotOnestopItems, type: 'step'),
+            ),
           ],
         ),
       ),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
-      HomeMoreList(),
+      // hotRecommendItems: _hotRecommendItems
+      HomeMoreList(hotRecommendItems: _hotRecommendItems),
     ];
+  }
+
+  void initState() {
+    super.initState();
+    _getBannerList();
+    _getCategoryList();
+    _getFlashSaleRecommendList();
+    _getHotInVogueItems();
+    _getHotOnestopItems();
+    _getHotRecommendItems();
+  }
+
+  void _getBannerList() async {
+    _bannerItems = await getBannerItems();
+    setState(() {});
+  }
+
+  void _getCategoryList() async {
+    _categoryItems = await getCategoryItems();
+    setState(() {});
+  }
+
+  void _getFlashSaleRecommendList() async {
+    _flashSaleRecommendItems = await getFlashSaleRecommendItems();
+
+    setState(() {});
+  }
+
+  void _getHotInVogueItems() async {
+    _hotInVogueItems = await getHotInVogueItems();
+    setState(() {});
+  }
+
+  void _getHotOnestopItems() async {
+    _hotOnestopItems = await getHotOnestopItems();
+    setState(() {});
+  }
+
+  void _getHotRecommendItems() async {
+    _hotRecommendItems = await getHotRecommendItems({"limit": 10});
+
+    setState(() {});
   }
 
   @override
